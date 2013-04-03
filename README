@@ -18,11 +18,19 @@ Why Make This?
     Envar makes one step further by allowing you to load scripts from files as
     well  as to save current environment variables into script files for later
     loading
+    
+    Load from file
+        echo "PATH:[%PATH%][;C:\ruby\bin]" > myscript 
+        envar -i myscript
+    
+    Send through pipe
+        echo "PATH:[%PATH%][;C:\ruby\bin]" | envar -i myscript
 
-    echo "PATH:[%PATH%][;C:\ruby\bin]" > myscript envar -i myscript-- load from
-    file
+    Save all environment variables to file
+        envar -e my_variables
 
-    envar -e saved_file  -- save to file
+    Output environment variables to standard output (or pipe)
+        envar -e    
 
     Note that in the above example %PATH% is replaced automatically by your shell. 
     If you want to get value of PATH from a config file you need to surround 
