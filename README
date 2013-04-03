@@ -1,4 +1,5 @@
-A simple console application for managing windows environment variables with config files
+   A simple console application for managing windows environment 
+   variables with config files
 
 Why Make This?
 
@@ -63,12 +64,14 @@ Usage:
 
 EXECUTING SCRIPTS:
 
-    You can pass a script directly as an argument or read it from file or standard input.
+    You can pass a script directly as an argument or read it from file 
+    or standard input.
 
 Examples:
 
     Directly passing a script line:
-        envar JAVA_HOME : [C:\Java\bin] RUBY_HOME- -- set JAVA_HOME and remove RUBY_HOME
+        envar JAVA_HOME : [C:\Java\bin] RUBY_HOME- -- set JAVA_HOME 
+                                                   -- and remove RUBY_HOME
 
     Reading script from a file:
         envar -i script_file
@@ -80,8 +83,9 @@ Examples:
 
 GENERATING SCRIPTS:
     
-    It maybe beneficial to be able  save all current user and system environment variables 
-    into a file for later loading. It can be accomplished with -e option (export)
+    It maybe beneficial to be able  save all current user and system environment 
+    variables into a file for later loading. It can be accomplished with -e 
+    option (export)
 
 Examples:
 
