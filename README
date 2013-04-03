@@ -2,22 +2,24 @@ A simple console application for managing windows environment variables with con
 
 Why Make This?
 
-    Windows operating system doesn't have any easy ways to persistently change environment 
-    variables without relying on graphical user interface. 
+    Windows operating system doesn't have any easy ways to persistently change
+    environment  variables without relying on graphical user interface.
 
-    Envar solves this problem by requiring only a few keystrokes to create and edit 
-    variables.
+    Envar solves this problem by requiring only a few keystrokes to create and
+    edit  variables.
 
-    envar PATH:[%PATH%][;C:\ruby\bin] -- adding to path is easy! (Yes, it's a comment)
+    envar PATH:[%PATH%][;C:\ruby\bin] -- adding to path is easy! (Yes, it's a
+    comment)
 
     All changes are made on the registry so they are visible beween applications
     and persist after reboots.
 
-    Envar makes one step further by allowing you to load scripts from files as well 
-    as to save current environment variables into script files for later loading
+    Envar makes one step further by allowing you to load scripts from files as
+    well  as to save current environment variables into script files for later
+    loading
 
-    echo "PATH:[%PATH%][;C:\ruby\bin]" > myscript
-    envar -i myscript    -- load from file
+    echo "PATH:[%PATH%][;C:\ruby\bin]" > myscript envar -i myscript-- load from
+    file
 
     envar -e saved_file  -- save to file
 
@@ -51,11 +53,13 @@ Usage:
 
     envar {SCRIPT LINE | -{i|e} [SCRIPT FILE]}
 
-    -i : import script from file if such is specified, or read it from standard input
+    -i : import script from file if such is specified, or read it from 
+         standard input
 
-    -e : export current state of all variables into a script file or standard output if 
-         no file is specified. Each found environment variable produces a set statement
-         in generated script file with it's current name and value.
+    -e : export current state of all variables into a script file or standard 
+         output if no file is specified. Each found environment variable 
+         produces a set statement in generated script file with it's current
+         name and value.
 
 EXECUTING SCRIPTS:
 
