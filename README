@@ -83,7 +83,7 @@ Examples:
 
 GENERATING SCRIPTS:
     
-    It maybe beneficial to be able  save all current user and system environment 
+    It may be beneficial to be able to save all current user and system environment 
     variables into a file for later loading. It can be accomplished with -e 
     option (export)
 
