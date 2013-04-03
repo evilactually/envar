@@ -9,7 +9,7 @@ Why Make This?
     Envar solves this problem by requiring only a few keystrokes to create and
     edit  variables.
 
-    envar PATH:[%PATH%][;C:\ruby\bin] -- adding to path is easy! (Yes, it's a
+    envar PATH:[%PATH%;C:\ruby\bin] -- adding to path is easy! (Yes, it's a
     comment)
 
     All changes are made on the registry so they are visible beween applications
