@@ -1,4 +1,4 @@
-(include "envar.scm")
+(include "script.scm")
 
 (use test extras)
 
@@ -25,7 +25,7 @@
                    --                   [For Those Who Cherish A Good Drink]
                    --                   [The People Mostly There Harmless]
                    --                   [And Would Kill You Only If You Piss Them Off]
-                     @EARTH_DESCR_REV1 :[Mostly ]          -- New revised edition(cut version)
+                     @EARTH_DESCR_REV1: [Mostly ]          -- New revised edition(cut version)
                                         [Harmless]   
 
                      EARTH_LOCATION -                      -- It has been demolished so there's no location
@@ -33,11 +33,8 @@
                      EARTH_POPULATION : [1]                -- Unfortunately most of the population were killed(demolished)
                                                            -- together with the planet, except for Arthur Dent.
                                                            -- Arthur Dent is scheduled for demolition later this year
-                                                           -- plans are available at your local planning council
-                     @R+-3allyWi3rd_Va^riab&le +            
-                     H0lISh1#_JAR_0f_Fr0G_BARF : [a~b!c@d#f$g%h^i&j*()] -- yaak
-                                                 [@JUSTASTRING+]
-                                                 [\"C:\\Program Files x86\\Java\"]")))
+                                                           -- plans are available at your local planning council")))
+                     
   
   (test-assert (statement-assign? (first statements)))
   (test-assert (equal? (statement-assign-name (first statements)) "EARTH_DESCR_REV0"))
@@ -59,21 +56,30 @@
   (test-assert (statement-assign? (fifth statements)))
   (test-assert (equal? (statement-assign-name (fifth statements)) "EARTH_POPULATION"))
   (test-assert (equal? (statement-assign-value (fifth statements)) "1"))
-  (test-assert (equal? (statement-assign-scope (fifth statements)) `user))
+  (test-assert (equal? (statement-assign-scope (fifth statements)) `user)))
   
-  (test-assert (statement-create? (sixth statements)))
-  (write-line (statement-create-name (sixth statements)))
-  (test-assert (equal? (statement-create-name (sixth statements)) "R+-3allyWi3rd_Va^riab&le"))
   
-  (test-assert (statement-assign? (seventh statements)))
-  (test-assert (equal? (statement-assign-name (seventh statements)) "H0lISh1#_JAR_0f_Fr0G_BARF"))
-  (test-assert (equal? (statement-assign-value (seventh statements)) (string-append "a~b!c@d#f$g%h^i&j*()"
+(let ((statements (parse-statements "@R+-3allyWi3rd_Va^riab&le +            
+                                     H0lISh1#_JAR_0f_Fr0G_BARF : [a~b!c@d#f$g%h^i&j*()] -- yaak
+                                                                 [@JUSTASTRING+]
+                                                                 [\"C:\\Program Files x86\\Java\"]")))
+  (test-assert (statement-create? (first statements)))
+  (write-line (statement-create-name (first statements)))
+  (test-assert (equal? (statement-create-name (first statements)) "R+-3allyWi3rd_Va^riab&le"))
+  
+  (test-assert (statement-assign? (second statements)))
+  (test-assert (equal? (statement-assign-name (second statements)) "H0lISh1#_JAR_0f_Fr0G_BARF"))
+  (test-assert (equal? (statement-assign-value (second statements)) (string-append "a~b!c@d#f$g%h^i&j*()"
                                                                                     "@JUSTASTRING+"
                                                                                     "\"C:\\Program Files x86\\Java\"")))
-  (test-assert (equal? (statement-assign-scope (seventh statements)) `user)))
+  (test-assert (equal? (statement-assign-scope (second statements)) `user)))
+
 
 (let ((bad-tokens (invalid-tokens "@VAR+ PATH : [I'm a user] [variable]")))
   (test-assert (equal? (length bad-tokens) 0)))
+
+(write-line
+(statement->script (make-statement-assign scope: `system name: "BUGS" value: "1001")))
 
 
 
