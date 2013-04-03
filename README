@@ -24,6 +24,16 @@ Why Make This?
 
     envar -e saved_file  -- save to file
 
+    Note that in the above example %PATH% is replaced automatically by your shell. 
+    If you want to get value of PATH from a config file you need to surround 
+    it with $(...): 
+
+    PATH:[$(%PATH%)][;C:\ruby\bin]
+
+    Anything inside the parenthesis will be evaluated by your shell,
+    which means you can use any normal shell command to generate
+    values of your variables or any part of a script.
+
 Syntax:
 
 -- This is a comment
