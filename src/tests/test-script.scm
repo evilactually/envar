@@ -77,3 +77,22 @@
                                                                                     "@JUSTASTRING+"
                                                                                     "\"C:\\Program Files x86\\Java\"")))
   (test-assert (equal? (op-arg (second statements) `scope) `user)))
+
+(test-group "script generation"
+  
+  (define statement (parse-statements (statement->script (make-op/assign `user "NAME" "VALUE"))))
+  (test-assert (op-assign? (first statement)))
+  (test-assert (equal? (op-arg (first statement) `scope) `user))
+  (test-assert (equal? (op-arg (first statement) `name) "NAME"))
+  (test-assert (equal? (op-arg (first statement) `value) "VALUE"))
+  
+  (define statement (parse-statements (statement->script (make-op/create `system "NAME" ))))
+  (test-assert (op-create? (first statement)))
+  (test-assert (equal? (op-arg (first statement) `scope) `system))
+  (test-assert (equal? (op-arg (first statement) `name) "NAME"))
+    
+  (define statement (parse-statements (statement->script (make-op/remove `user "NAME" ))))
+  (test-assert (op-remove? (first statement)))
+  (test-assert (equal? (op-arg (first statement) `scope) `user))
+  (test-assert (equal? (op-arg (first statement) `name) "NAME")))
+            
