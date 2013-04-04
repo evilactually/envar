@@ -37,12 +37,12 @@
   
   ;; body     
   (if (not-whitespace? args-merged) 
-      (if (equal? (first args) "-r")
+      (if (equal? (first args) "-i")
           (execute-script                          ; read script from file or stdio
             (if (file-name)
                 (read-string/from-file (file-name))
                 (read-string)))
-          (if (equal? (first args) "-w")
+          (if (equal? (first args) "-e")
               (let ((script generate-script))      ; generate script to file or stdio
                 (if (file-name)
                     (write/to-file (file-name) script)

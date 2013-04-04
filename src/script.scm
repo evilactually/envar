@@ -19,18 +19,18 @@
 
 ;; @descr: renders statement into a script string
 (define (statement->script statement) 
-  (~ (if (equal? (statement-assign-scope statement) `system)
+  (~ (if (equal? (op-arg statement `scope) `system)
          "@"
          "")
-     (statement-assign-name statement)
+     (op-arg statement `name)
      
-     (cond ((statement-assign? statement)
+     (cond ((op-assign? statement)
             (~
               " : "
-              "[" (statement-assign-value statement) "]"))
-           ((statement-create? statement)
+              "[" (op-arg statement `value) "]"))
+           ((op-create? statement)
             " + ")
-           ((statement-remove? statement)
+           ((op-remove? statement)
             " - "))))
 
 ;; @descr: explains what statement does
@@ -51,16 +51,16 @@
       (define name (value-of `name))
             
       (if (equal? (value-of `op) ":")          ; operator :
-          (make-statement-assign scope: scope
-                                 name: name
-                                 value: (string-merge
-                                          (map ; map each value in brackets
-                                            (lambda (value-match)
-                                              (submatch-named value-match `value))
-                                            (irregex-search/all-matches 
-                                              value-igx
-                                              (submatch-named statement-match `values)))))
+          (make-op/assign scope         ; scope
+                          name          ; name
+                          (string-merge ; value
+                            (map ; map each value in brackets
+                              (lambda (value-match)
+                                (submatch-named value-match `value))
+                              (irregex-search/all-matches
+                                value-igx
+                                (submatch-named statement-match `values)))))
           ((if (equal? (value-of `op) "+")     ; + or - operator
-               make-statement-create
-               make-statement-remove) scope: scope name: name)))
+               make-op/create
+               make-op/remove) scope name)))
     (irregex-search/all-matches full-igx (strip-comments str))))

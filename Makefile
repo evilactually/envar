@@ -11,3 +11,4 @@ clean:
 	rm ;-f ./build/$(EXECUTABLE)
 tests:
 	csi -I $(ENVAR_SRC) -s $(ENVAR_SRC)/tests/tests.scm
+	

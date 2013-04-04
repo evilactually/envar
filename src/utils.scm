@@ -56,6 +56,3 @@
     '()
     str
     (lambda (i s) (reverse s))))
-
-
-
