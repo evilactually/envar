@@ -33,9 +33,6 @@
            ((op-remove? statement)
             " - "))))
 
-;; @descr: explains what statement does
-(define (verbalize-statement statement) "...")
-
 ;; @descr: parses a string into a list of statements
 (define (parse-statements str)
   (map                                         ; map each statement              

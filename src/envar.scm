@@ -9,14 +9,13 @@
 (define (execute-statement! statement) `())
 
 ;; @descr: generate scripts from current environment variables
-(define (generate-script) `())
+(define (generate-script) "script generated")
 
 ;; @descr: parse script and execute it
 (define (execute-script script) 
   (let ((found-bad-tokens (invalid-tokens script))) ; check for errors
     (if (null? found-bad-tokens)
         (for-each (lambda (statement)               ; execute statements
-                    (write-line (verbalize-statement statement))
                     (execute-statement! statement))
                   (parse-statements script))
         (for-each                                   ; report errors
@@ -43,7 +42,7 @@
                 (read-string/from-file (file-name))
                 (read-string)))
           (if (equal? (first args) "-e")
-              (let ((script generate-script))      ; generate script to file or stdio
+              (let ((script (generate-script)))      ; generate script to file or stdio
                 (if (file-name)
                     (write/to-file (file-name) script)
                     (write script)))
