@@ -1,32 +1,12 @@
 (include "utils.scm")
 (include "script.scm")
-(include "data.scm")
-(include "system.scm")
 
 (use extras)
-
-;; @descr: performs action described by statement data structure
-(define (execute-statement! statement) `())
-
-;; @descr: generate scripts from current environment variables
-(define (generate-script) "script generated")
-
-;; @descr: parse script and execute it
-(define (execute-script script) 
-  (let ((found-bad-tokens (invalid-tokens script))) ; check for errors
-    (if (null? found-bad-tokens)
-        (for-each (lambda (statement)               ; execute statements
-                    (execute-statement! statement))
-                  (parse-statements script))
-        (for-each                                   ; report errors
-          (lambda (bad-token)
-            (write-line (~ "Unrecognized input: " bad-token)))
-          found-bad-tokens))))
 
 ;; descr: main application entry point
 (define (envar args)
   
-  ;; helpers 
+  ;; descr: return file name argument if present 
   (define (file-name)
     (if (equal? (length args) 2)
         (second args)

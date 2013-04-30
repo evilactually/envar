@@ -1,11 +1,6 @@
-
 ;; @file: Various helper functions and definitions
 
-(use irregex)
-
 (define else #t)
-
-(define submatch-named irregex-match-substring)
 
 (define ~ string-append)
 
@@ -32,9 +27,8 @@
 ;; @descr: merge a list of strings
 (define (string-merge strings)
   (string-merge/deliminated strings ""))
-  
-(define (not-whitespace? str)
-  (not (irregex-match-data? (irregex-match `(: (* whitespace ) ) str))))
+
+(use extras)
 
 ;; @descr: read entire file into string
 (define (read-string/from-file filename)
@@ -48,6 +42,10 @@
     (lambda ()
       (write str))))
 
+(use irregex)
+
+(define submatch-named irregex-match-substring)
+
 ;; @descr: returns a list of matches
 (define (irregex-search/all-matches igx str)
   (irregex-fold 
@@ -56,3 +54,16 @@
     '()
     str
     (lambda (i s) (reverse s))))
+
+(define (not-whitespace? str)
+  (not (irregex-match-data? (irregex-match `(: (* whitespace ) ) str))))
+
+(use posix extras)
+
+;; @descr: evaluates a command in shell and returns it's standard output
+(define (shell-evaluate! str)
+  (call-with-input-pipe 
+    str
+    (lambda(port) 
+      (read-string #f port))
+    #:text))

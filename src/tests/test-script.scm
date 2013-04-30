@@ -2,97 +2,93 @@
 
 (use test extras)
 
-(test-assert #t)
-
-(test-group "comments"
-  (define msg (strip-comments "Censored Message: Project -- Heart of Gold \n is under heavy development. It will be delivered as planed
-  -- (by 32--18--5435:GTS) \n. Verified Signature: Gallactic Government."))
-  (test-assert (irregex-match-data? (irregex-search `(: "Verified Signature") msg)))
-  (test-assert (not (irregex-match-data? (irregex-search `(: "Heart of Gold") msg))))
-  (test-assert (not (irregex-match-data? (irregex-search `(: "(by 32--18--5435:GTS)") msg)))))
-
-(test-group "one line comment"
-  (define str (strip-comments "Project --Hearth Of Gold"))
-  (test-assert (not (irregex-match-data? (irregex-search `(: "Heart of Gold") str)))))
-
-(test-group "single statement"
-  (define statements (parse-statements "USER:[Ford Prefect] -- an indesnusable together guy PASSWORD:[Pink_Helliphant]"))
-  (test-assert (equal? (op-arg (first statements) `name) "USER"))
-  (test-assert (equal? (op-arg (first statements) `scope) `user))
-  (test-assert (equal? (op-arg (first statements) `value) "Ford Prefect"))
-  (test-assert (equal? (length statements) 1)))
-
-(test-group "block of statements"
-  (define statements (parse-statements
-                      "EARTH_DESCR_REV0 : [Harmless]
-                     --EARTH_DESCR_REV1a: [To Thee I Say The Place Is Splendid]
-                     --                   [For Those Who Cherish A Good Drink]
-                     --                   [The People Mostly There Harmless]
-                     --                   [And Would Kill You Only If You Piss Them Off]
-                       @EARTH_DESCR_REV1: [Mostly ]          -- New revised edition(cut version)
-                                          [Harmless]
-
-                       EARTH_LOCATION -                      -- It has been demolished so there's no location
-                       EARTH_POPULATION+                     -- Recent exploration made available new data
-                       EARTH_POPULATION : [1]                -- Unfortunately most of the population were killed(demolished)
-                                                             -- together with the planet, except for Arthur Dent.
-                                                             -- Arthur Dent is scheduled for demolition later this year
-                                                             -- plans are available at your local planning council"))
-
-  (test-assert (op-assign? (first statements)))
-  (test-assert (equal? (op-arg (first statements) `name) "EARTH_DESCR_REV0"))
-  (test-assert (equal? (op-arg (first statements) `value) "Harmless"))
-  (test-assert (equal? (op-arg (first statements) `scope) `user))
-
-
-  (test-assert (op-assign? (second statements)))
-  (test-assert (equal? (op-arg (second statements) `name) "EARTH_DESCR_REV1"))
-  (test-assert (equal? (op-arg (second statements) `value) "Mostly Harmless"))
-  (test-assert (equal? (op-arg  (second statements) `scope) `system))
-
-  (test-assert (op-remove? (third statements)))
-  (test-assert (equal? (op-arg (third statements) `name) "EARTH_LOCATION"))
-  (test-assert (equal? (op-arg  (third statements) `scope) `user))
-
-  (test-assert (op-create? (fourth statements)))
-  (test-assert (equal? (op-arg (fourth statements) `name) "EARTH_POPULATION"))
-  (test-assert (equal? (op-arg  (fourth statements) `scope) `user))
-
-  (test-assert (op-assign? (fifth statements)))
-  (test-assert (equal? (op-arg (fifth statements) `name) "EARTH_POPULATION"))
-  (test-assert (equal? (op-arg (fifth statements) `value) "1"))
-  (test-assert (equal? (op-arg  (fifth statements) `scope) `user)))
-
-(test-group "special characters"
-  (define statements (parse-statements "@R+-3allyWi3rd_Va^riab&le +
-                                       H0lISh1#_JAR_0f_Fr0G_BARF : [a~b!c@d#f$g%h^i&j*()] -- yaak
-                                                                   [@JUSTASTRING+]
-                                                                   [\"C:\\Program Files x86\\Java\"]"))
-  (test-assert (op-create? (first statements)))
-  (test-assert (equal? (op-arg (first statements) `name) "R+-3allyWi3rd_Va^riab&le"))
-
-  (test-assert (op-assign? (second statements)))
-  (test-assert (equal? (op-arg (second statements) `name) "H0lISh1#_JAR_0f_Fr0G_BARF"))
-  (test-assert (equal? (op-arg (second statements) `value) (string-append "a~b!c@d#f$g%h^i&j*()"
-                                                                                    "@JUSTASTRING+"
-                                                                                    "\"C:\\Program Files x86\\Java\"")))
-  (test-assert (equal? (op-arg (second statements) `scope) `user)))
-
-(test-group "script generation"
-  
-  (define statement (parse-statements (statement->script (make-op/assign `user "NAME" "VALUE"))))
-  (test-assert (op-assign? (first statement)))
-  (test-assert (equal? (op-arg (first statement) `scope) `user))
-  (test-assert (equal? (op-arg (first statement) `name) "NAME"))
-  (test-assert (equal? (op-arg (first statement) `value) "VALUE"))
-  
-  (define statement (parse-statements (statement->script (make-op/create `system "NAME" ))))
-  (test-assert (op-create? (first statement)))
-  (test-assert (equal? (op-arg (first statement) `scope) `system))
-  (test-assert (equal? (op-arg (first statement) `name) "NAME"))
-    
-  (define statement (parse-statements (statement->script (make-op/remove `user "NAME" ))))
-  (test-assert (op-remove? (first statement)))
-  (test-assert (equal? (op-arg (first statement) `scope) `user))
-  (test-assert (equal? (op-arg (first statement) `name) "NAME")))
+(test-group "parse-statements function, base cases"
             
+            (let ((statement (first (parse-statements "VARIABLE +"))))
+              (test-assert "Create variable" (and 
+                                               (equal? "VARIABLE" (op-arg statements) `name)
+                                               (equal? `user (op-arg statement `scope))
+                                               (op-create?  statement))))
+            
+            (let ((statement (first (parse-statements "VARIABLE -"))))
+              (test "Remove variable" "VARIABLE" (op-arg statement `name)))
+            
+            (let ((statement (first (parse-statements "VARIABLE : [VALUE]
+                                                                  [VALUE2]"))))
+              (test-assert "Assign variable" (and 
+                                               (equal? "VARIABLE" (op-arg statement `name))
+                                               (equal? "VALUE" (first (op-arg statement `values)))
+                                               (equal? "VALUE2" (second (op-arg statement `values))))))
+            
+            (let ((statements (parse-statements "AMETHIST+
+                                                 @DIMOND-
+                                                 JASPER:[RED][GREEN]")))
+              (test-assert "Mutiline script" (and 
+                                               (equal? "AMETHIST" (op-arg (first statements) `name))
+                                               (equal? `user (op-arg (first statements) `scope))
+                                               (op-create? (first statements))
+                                               
+                                               (equal? "DIMOND" (op-arg (second statements) `name))
+                                               (equal? `system (op-arg (second statements) `scope))
+                                               (op-remove? (second statements))
+                                               
+                                               (equal? "JASPER" (op-arg (third statements) `name))
+                                               (equal? `user (op-arg (third statements) `scope))
+                                               (op-assign? (third statements)))))
+            
+            (let ((statements (parse-statements 
+                                (preprocess-script "VAR- # JAR : [VALUE]
+                                                                  # BAR+"))))
+              (test "Comments" 1 (length statements)))
+            
+            (let ((statements (parse-statements "@GLOBAL_VAR+ USER_VAR-")))
+              (test "Scope modifier #1: present" `system (op-arg (first statements) `scope))
+              (test "Scope modifier #2: not present" `user (op-arg (second statements) `scope)))
+            
+            (let ((statement (first (parse-statements "@A-Z_a-z_0-9 +"))))
+              (test "Valid charset for names" "A-Z_a-z_0-9" (op-arg statement `name)))
+            
+            (let ((statement (first (parse-statements "VARIABLE : [~!@$%^&*(){}_-=+-|\\/.,<>;:'\"]
+                                                                  [ABCDFabcdf]
+                                                                  [1234567890]"))))
+              (test-assert "Valid charset for values" (and 
+                                                        (equal? "~!@$%^&*(){}_-=+-|\\/.,<>;:'\"" (first (op-arg statement `values)))
+                                                        (equal? "ABCDFabcdf" (second (op-arg statement `values)))
+                                                        (equal? "1234567890" (third (op-arg statement `values))))))
+            
+            (let ((statement (first (parse-statements 
+                                      (preprocess-script "VARIABLE : [$(TMP);C:\\test\\bin]")))))
+              
+              (test "Evaluation block, variable reference" 
+                    (string-append (read-var `user "TMP") ";C:\\test\\bin") 
+                    (first (op-arg statement `values))))
+            
+            (let ((statement (first (parse-statements 
+                                      (preprocess-script "VARIABLE : [$(shell echo AMETHIST) RING]")))))
+              
+              (test "Evaluation block, shell command" 
+                    "AMETHIST\n RING"
+                    (first (op-arg statement `values)))))
+            
+(test-group "parse-statements function, special cases"
+            
+            (let ((statement (first (parse-statements "_A_PATH_+"))))
+              (test "Underscores #1" "_A_PATH_" (op-arg statement `name)))
+            
+            (let ((statement (first (parse-statements "___+"))))
+              (test "Underscores #2: all undersoceres" "___" (op-arg statement `name)))
+            
+            (let ((statement (first (parse-statements "-A-PATH--"))))
+              (test "Dashes #1" "-A-PATH-" (op-arg statement `name)))
+            
+            (let ((statement (first (parse-statements "----"))))
+              (test "Dashes #2: all dashes" "---" (op-arg statement `name))))
+
+(test-group "invalid-tokens function"
+  (test "Variable with no operator" " PATH " (first (invalid-tokens "VAR+ PATH JAR:[1234]")))
+  (test "Variable with a wrong operator" " PATH* " (first (invalid-tokens "VAR+ PATH* JAR:[1234]")))
+  (test "Missing value block" " JAR:" (first (invalid-tokens "VAR+ PATH+ JAR:")))
+  (test "Unterminated value block" "[val2" (first (invalid-tokens "VAR+ PATH+ JAR:[val1][val2")))
+  (test "Unexpected token between value blocks" ";[val2]" (first (invalid-tokens "JAR:[val1];[val2]")))
+  (test "Special chars are not allowed" 2 (length (invalid-tokens "@SUPER_U$ER:[VALUE] B@R+ "))))
+  
