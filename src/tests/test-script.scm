@@ -6,7 +6,7 @@
             
             (let ((statement (first (parse-statements "VARIABLE +"))))
               (test-assert "Create variable" (and 
-                                               (equal? "VARIABLE" (op-arg statements) `name)
+                                               (equal? "VARIABLE" (op-arg statement `name))
                                                (equal? `user (op-arg statement `scope))
                                                (op-create?  statement))))
             
