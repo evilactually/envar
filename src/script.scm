@@ -10,13 +10,14 @@
 ;; @descr: generate scripts from current environment variables
 (define (generate-script) "script generated")
 
+; preprocess and check for errors
+
 ;; @descr: parse script and execute it
-(define (execute-script  script) 
-  (let ((found-bad-tokens (invalid-tokens           ; preprocess and check for errors
-                            (preprocess-script script)))) 
+(define (execute-script script) 
+  (let* ((script (preprocess-script script))
+         (found-bad-tokens (invalid-tokens script)))          
     (if (null? found-bad-tokens)
-        (for-each (lambda (statement)               ; execute statements
-                    (execute-statement! statement))
+        (for-each execute-statement!                ; execute each statement
                   (parse-statements script))
         (for-each                                   ; report errors
           (lambda (bad-token)
@@ -24,7 +25,8 @@
           found-bad-tokens))))
 
 ;; @descr: performs action described by statement data structure
-(define (execute-statement! statement) `())
+(define (execute-statement! statement) 
+  (display (statement->script statement)))
 
 ;; @descr: apply all preprocessing steps to script 
 ;;         (runs before syntax validation and parsing)
@@ -68,6 +70,7 @@
                                       (define (value-of submatch-name)
                                         (submatch-named match submatch-name))
                                       
+                                      
                                       (if (value-of `command)
                                           (shell-evaluate! (value-of `command))
                                           (read-var `user (value-of `variable))))))
@@ -80,10 +83,10 @@
     ""))
 
 ;; @descr: returns a list of unrecognized strings
-(define (invalid-tokens str)
+(define (invalid-tokens script)
   (filter 
     not-whitespace?
-    (irregex-split statement-igx str)))
+    (irregex-split statement-igx script)))
 
 ;; @descr: renders statement into a script string
 (define (statement->script statement) 
@@ -91,15 +94,14 @@
          "@"
          "")
      (op-arg statement `name)
-     
      (cond ((op-assign? statement)
             (~
               " : "
-              (~ (map 
-                   (lambda (value)
-                     (~ "[" value "]"))
-                   (op-arg statement `values)))
-
+              (apply string-append (map 
+                                     (lambda (value)
+                                       (~ "[" value "] "))
+                                     (op-arg statement `values)))
+              
               ))
            ((op-create? statement)
             " + ")
