@@ -1,6 +1,7 @@
 ;; @descr: entry point for console application
 
-(include "envar.scm")
+(declare (uses envar))
 
-(begin 
-  (run))
+(display "TEST TEST TEST TEST")
+;(begin 
+;  (run))

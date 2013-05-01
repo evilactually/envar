@@ -1,4 +1,4 @@
-(include "script-statement.scm")
+(include "script-statement")
 
 (test-group "statement struct"
             (let ((op (make-op/assign `user "VARNAME" (list "VALUE"))))

@@ -1,20 +1,17 @@
 ;; @file: functions for script parsing and execution
 
-(include "script-grammar.scm")
-(include "script-statement.scm")
-(include "vars.scm")
-(include "utils.scm")
+(include "vars")
+(include "script-grammar")
+(include "script-statement")
 
 (use irregex srfi-1)
 
 ;; @descr: generate scripts from current environment variables
 (define (generate-script) "script generated")
 
-; preprocess and check for errors
-
 ;; @descr: parse script and execute it
 (define (execute-script script) 
-  (let* ((script (preprocess-script script))
+  (let* ((script (preprocess-script script))        ; preprocess and check for errors
          (found-bad-tokens (invalid-tokens script)))          
     (if (null? found-bad-tokens)
         (for-each execute-statement!                ; execute each statement
@@ -26,7 +23,7 @@
 
 ;; @descr: performs action described by statement data structure
 (define (execute-statement! statement) 
-  (display (statement->script statement)))
+  (write-line (statement->script statement)))
 
 ;; @descr: apply all preprocessing steps to script 
 ;;         (runs before syntax validation and parsing)
@@ -70,10 +67,13 @@
                                       (define (value-of submatch-name)
                                         (submatch-named match submatch-name))
                                       
-                                      
                                       (if (value-of `command)
                                           (shell-evaluate! (value-of `command))
-                                          (read-var `user (value-of `variable))))))
+                                          (read-var 
+                                            (if (equal? (value-of `scope) "@")
+                                                `system
+                                                `user)
+                                            (value-of `variable))))))
   
 ;; @descr: remove all commented out text from a string
 (define (strip-comments str)

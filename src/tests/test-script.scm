@@ -1,4 +1,5 @@
-(include "script.scm")
+(include "script")
+(include "utils")
 
 (use test extras)
 

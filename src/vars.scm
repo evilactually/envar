@@ -1,5 +1,15 @@
 
-(define (read-var scope name) "AMETHIST2")
+(import foreign)
+
+(define getstr (foreign-lambda c-string "getstr" c-string))
+
+(define winapi-read-var (foreign-lambda c-string "winapi_read_var" int c-string))
+
+(define (read-var scope name) 
+  (winapi-read-var (if (equal? scope `user)
+                       2
+                       1)
+                   name))
 
 (define (read-all-vars) `())
 

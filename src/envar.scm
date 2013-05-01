@@ -1,5 +1,5 @@
-(include "utils.scm")
-(include "script.scm")
+(include "utils")
+(include "script")
 
 (use extras)
 
@@ -30,5 +30,5 @@
       (write-line "UNHELPFUL HELP MESSAGE")))      ; no args? Show help.      
         
 ;; Main
-(define (run)
-  (envar (command-line-arguments)))
+(envar (command-line-arguments))
+
