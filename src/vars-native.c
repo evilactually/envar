@@ -2,7 +2,7 @@
 
 char* getstr(char* name)
 {
-	return "DIMOND";
+return "DIMOND";
 };
 
 #define SYSTEM_SUBKEY "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment"
@@ -11,8 +11,6 @@ char* getstr(char* name)
 #define USER_ROOTKEY HKEY_CURRENT_USER
 #define SYSTEM_SCOPE 1
 #define USER_SCOPE 2
-
-char string_buffer[1024];
 
 LONG open_variables_key(int scope, HKEY* key_out)
 {
@@ -23,21 +21,35 @@ LONG open_variables_key(int scope, HKEY* key_out)
                         key_out);  
 }
 
+int get_value_length(HKEY hKey, char* name)
+{
+    DWORD value_size = 0;
+    RegQueryValueEx (hKey,                     
+                     name,                     
+                     0,
+                     NULL,                     
+                     NULL,            
+                     &value_size              
+                );
+    return value_size;
+}
+
 char* winapi_read_var(int scope, char* name)
 {
     HKEY hKey;
-    DWORD buffer_size = sizeof(string_buffer);
+    DWORD buffer_size = get_value_length(hKey, name);
 
     LONG lRet = open_variables_key(scope, &hKey);
+    char* value_buf = malloc(buffer_size);
+    value_buf[0]=0;
 
-    RegQueryValueEx (
-    	    	hKey,                     
-    	        name,                     
-    	        0,
-    	        NULL,                     
-    	        string_buffer,            
-    	        &buffer_size              
-            );
+    RegQueryValueEx(hKey,                     
+                    name,                     
+                    0,
+                    NULL,                     
+                    value_buf,            
+                    &buffer_size);
 
-    return string_buffer;
+    return value_buf;
 };
+

@@ -3,7 +3,8 @@
 
 (define getstr (foreign-lambda c-string "getstr" c-string))
 
-(define winapi-read-var (foreign-lambda c-string "winapi_read_var" int c-string))
+; NOTE: nonnull-c-string*, because returned string is malloced and needs to be freed
+(define winapi-read-var (foreign-lambda nonnull-c-string* "winapi_read_var" int c-string))
 
 (define (read-var scope name) 
   (winapi-read-var (if (equal? scope `user)
