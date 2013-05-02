@@ -41,8 +41,8 @@
       
       ; body
       (define scope (if (equal? (value-of `scope) "@")
-                        `system
-                        `user))
+                        system_scope
+                        user_scope))
       (define name (value-of `name))
             
       (if (equal? (value-of `op) ":")   ; operator ":"
@@ -71,8 +71,8 @@
                                           (shell-evaluate! (value-of `command))
                                           (read-var 
                                             (if (equal? (value-of `scope) "@")
-                                                `system
-                                                `user)
+                                                system_scope
+                                                user_scope)
                                             (value-of `variable))))))
   
 ;; @descr: remove all commented out text from a string
@@ -90,7 +90,7 @@
 
 ;; @descr: renders statement into a script string
 (define (statement->script statement) 
-  (~ (if (equal? (op-arg statement `scope) `system)
+  (~ (if (equal? (op-arg statement `scope) system_scope)
          "@"
          "")
      (op-arg statement `name)

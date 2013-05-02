@@ -1,17 +1,18 @@
-
 (import foreign)
 
-(define getstr (foreign-lambda c-string "getstr" c-string))
+(define-constant user_scope 2)
+(define-constant system_scope 1)
 
-; NOTE: nonnull-c-string*, because returned string is malloced and needs to be freed
-(define winapi-read-var (foreign-lambda nonnull-c-string* "winapi_read_var" int c-string))
+;; @descr: get value of a environment variable
+;; NOTE: nonnull-c-string*, because returned string is malloced and needs to be freed
+(define read-var 
+  (foreign-lambda nonnull-c-string* "winapi_read_var" int c-string))
 
-(define (read-var scope name) 
-  (winapi-read-var (if (equal? scope `user)
-                       2
-                       1)
-                   name))
 
+(define winapi-get-var-names
+  (foreign-lambda c-string-list* "winapi_get_var_names" int))
+
+;; @descr: returns list of list of variables ((scope name value) (scope name value) ...)
 (define (read-all-vars) `())
 
 (define (write-var! scope name value) `())

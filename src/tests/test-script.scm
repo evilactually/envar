@@ -8,7 +8,7 @@
             (let ((statement (first (parse-statements "VARIABLE +"))))
               (test-assert "Create variable" (and 
                                                (equal? "VARIABLE" (op-arg statement `name))
-                                               (equal? `user (op-arg statement `scope))
+                                               (equal? user_scope (op-arg statement `scope))
                                                (op-create?  statement))))
             
             (let ((statement (first (parse-statements "VARIABLE -"))))
@@ -26,15 +26,15 @@
                                                  JASPER:[RED][GREEN]")))
               (test-assert "Mutiline script" (and 
                                                (equal? "AMETHIST" (op-arg (first statements) `name))
-                                               (equal? `user (op-arg (first statements) `scope))
+                                               (equal? user_scope (op-arg (first statements) `scope))
                                                (op-create? (first statements))
                                                
                                                (equal? "DIMOND" (op-arg (second statements) `name))
-                                               (equal? `system (op-arg (second statements) `scope))
+                                               (equal? system_scope (op-arg (second statements) `scope))
                                                (op-remove? (second statements))
                                                
                                                (equal? "JASPER" (op-arg (third statements) `name))
-                                               (equal? `user (op-arg (third statements) `scope))
+                                               (equal? user_scope (op-arg (third statements) `scope))
                                                (op-assign? (third statements)))))
             
             (let ((statements (parse-statements 
@@ -43,8 +43,8 @@
               (test "Comments" 1 (length statements)))
             
             (let ((statements (parse-statements "@GLOBAL_VAR+ USER_VAR-")))
-              (test "Scope modifier #1: present" `system (op-arg (first statements) `scope))
-              (test "Scope modifier #2: not present" `user (op-arg (second statements) `scope)))
+              (test "Scope modifier #1: present" system_scope (op-arg (first statements) `scope))
+              (test "Scope modifier #2: not present" user_scope (op-arg (second statements) `scope)))
             
             (let ((statement (first (parse-statements "@A-Z_a-z_0-9 +"))))
               (test "Valid charset for names" "A-Z_a-z_0-9" (op-arg statement `name)))
@@ -61,7 +61,7 @@
                                       (preprocess-script "VARIABLE : [$(TMP);C:\\test\\bin]")))))
               
               (test "Evaluation block, variable reference" 
-                    (string-append (read-var `user "TMP") ";C:\\test\\bin") 
+                    (string-append (read-var user_scope "TMP") ";C:\\test\\bin") 
                     (first (op-arg statement `values))))
             
             (let ((statement (first (parse-statements 
