@@ -30,6 +30,20 @@
       (write-line "UNHELPFUL HELP MESSAGE")))      ; no args? Show help.      
         
 ;; Main
-(envar (command-line-arguments))
+;(envar (command-line-arguments))
 
+(use lolevel)
+(include "vars")
+; (define-external scope_ext int)
+; (define-external name_ext c-string)
+; (define-external value_ext c-string)
 
+; (for-each 
+;   (lambda (i)
+;     (winapi-read-by-index i (location scope_ext) (location name_ext) (location value_ext))
+;     (write-line name_ext))
+;     ;(let ((name name_ext))
+;     ;  (write-line name)))
+;   (list 0 1 2 3 4))
+
+(display (read-all-vars))
