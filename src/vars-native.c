@@ -17,7 +17,7 @@ LONG open_variables_key(int scope, HKEY* key_out)
                         key_out);  
 }
 
-int get_value_length(HKEY hKey, char* name)
+DWORD get_value_length(HKEY hKey, char* name)
 {
     DWORD value_size = 0;
     RegQueryValueEx (hKey,                     
@@ -79,16 +79,17 @@ void winapi_write_var(int scope, char* name, char* value)
                   REG_SZ, // null terminated string
                   value,
                   sizeof(char)*(strlen(value) + 1));
-
+    RegFlushKey(hKey);
     RegCloseKey(hKey);
 }
 
 char* winapi_read_var(int scope, char* name)
 {
     HKEY hKey;
-    DWORD buffer_size = get_value_length(hKey, name);
-
     int lRet = open_variables_key(scope, &hKey);
+    
+    DWORD buffer_size = get_value_length(hKey, name);
+    
     char* value_buf = malloc(buffer_size);
     value_buf[0]=0;                         // null terminate in case query 
                                             // doesn't return anything
@@ -100,7 +101,7 @@ char* winapi_read_var(int scope, char* name)
                     &buffer_size);
 
     RegCloseKey(hKey);
-
+    
     return value_buf;
 };
 
@@ -109,6 +110,7 @@ void winapi_remove_var(int scope, char* name)
     HKEY hKey;
     LONG lRet = open_variables_key(scope, &hKey);
     RegDeleteValue(hKey, name);
+    RegFlushKey(hKey);
     RegCloseKey(hKey);
 };
 

@@ -32,7 +32,7 @@
           found-bad-tokens))))
 
 ;; @descr: performs action described by statement data structure
-(define (execute-statement! statement) 
+(define (execute-statement! statement)
   (cond
     ((op-assign? statement)
      (write-var! 
