@@ -68,7 +68,20 @@ DWORD get_longest_name(HKEY hKey)
     return longest_name;
 }
 
+void winapi_write_var(int scope, char* name, char* value)
+{
+    HKEY hKey;
+    LONG lRet = open_variables_key(scope, &hKey);
+        
+    RegSetValueEx(hKey,
+                  name,
+                  0,
+                  REG_SZ, // null terminated string
+                  value,
+                  sizeof(char)*(strlen(value) + 1));
 
+    RegCloseKey(hKey);
+}
 
 char* winapi_read_var(int scope, char* name)
 {
@@ -91,12 +104,22 @@ char* winapi_read_var(int scope, char* name)
     return value_buf;
 };
 
-int winapi_var_count_all(int scope)
+void winapi_remove_var(int scope, char* name)
+{
+    HKEY hKey;
+    LONG lRet = open_variables_key(scope, &hKey);
+    RegDeleteValue(hKey, name);
+    RegCloseKey(hKey);
+};
+
+// @descr: return total number of vars in both scopes
+int winapi_var_count_all(void)
 {
     return winapi_var_count_scope(SYSTEM_SCOPE) +
            winapi_var_count_scope(USER_SCOPE);
 };
 
+// @descr: return number of vars in a scope (user or system)
 int winapi_var_count_scope(int scope)
 {
     HKEY hKey;
@@ -181,50 +204,3 @@ BOOL winapi_read_by_index(int index, int* out_scope, char** out_name, char** out
 
     return TRUE;
 };
-
-char** winapi_get_var_names(int scope)
-{
-    HKEY hKey;
-    LONG lRet = open_variables_key(scope, &hKey);
-
-    DWORD var_count = 0;
-    DWORD longest_value = 0;
-
-    RegQueryInfoKey(hKey,     
-                    NULL,     
-                    NULL,     
-                    NULL,     
-                    NULL,     
-                    NULL,     
-                    NULL,     
-                    &var_count,                 
-                    &longest_value,     
-                    NULL,     
-                    NULL,     
-                    NULL);
-    char** name_list = malloc (sizeof(char*)*(var_count + 1));
-    name_list[var_count] = NULL;                     // scheme expects NULL terminated list
-
-    char name_buffer [sizeof(char)*(longest_value)];
-
-    int i = 0;
-    for (i = 0; i < var_count; i++)
-    {
-        DWORD size = sizeof(name_buffer);
-        RegEnumValue(hKey,   
-                     i,      
-                     name_buffer,                 
-                     &size,                          // not including the terminating null character                        
-                     0,
-                     NULL,
-                     NULL,
-                     NULL);
-        name_list[i] = malloc(size+1);               // + 1 for null terminator
-        memcpy(name_list[i], name_buffer, size + 1); // copy string + null terminator
-    };
-
-    RegCloseKey(hKey);
-    return name_list;
-};
-
-

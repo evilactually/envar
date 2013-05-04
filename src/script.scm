@@ -33,7 +33,20 @@
 
 ;; @descr: performs action described by statement data structure
 (define (execute-statement! statement) 
-  (write-line (statement->script statement)))
+  (cond
+    ((op-assign? statement)
+     (write-var! 
+       (op-arg statement `scope)
+       (op-arg statement `name)
+       (apply string-append (op-arg statement `values))))
+    ((op-create? statement)
+     (create-var! 
+       (op-arg statement `scope)
+       (op-arg statement `name)))
+    ((op-remove? statement)
+     (remove-var! 
+       (op-arg statement `scope)
+       (op-arg statement `name)))))
 
 ;; @descr: apply all preprocessing steps to script 
 ;;         (runs before syntax validation and parsing)
