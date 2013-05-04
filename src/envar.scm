@@ -22,18 +22,18 @@
                 (read-string/from-file (file-name))
                 (read-string)))
           (if (equal? (first args) "-e")
-              (let ((script (generate-script)))      ; generate script to file or stdio
+              (let ((script (generate-script)))    ; generate script to file or stdio
                 (if (file-name)
                     (write/to-file (file-name) script)
-                    (write script)))
+                    (display script)))
               (execute-script args-merged)))       ; read script from arguments
       (write-line "UNHELPFUL HELP MESSAGE")))      ; no args? Show help.      
         
 ;; Main
-;(envar (command-line-arguments))
+(envar (command-line-arguments))
 
-(use lolevel)
-(include "vars")
+;(use lolevel)
+;(include "vars")
 ; (define-external scope_ext int)
 ; (define-external name_ext c-string)
 ; (define-external value_ext c-string)
@@ -46,4 +46,4 @@
 ;     ;  (write-line name)))
 ;   (list 0 1 2 3 4))
 
-(display (read-all-vars))
+; (display (generate-script))

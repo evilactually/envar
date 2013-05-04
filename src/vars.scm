@@ -1,13 +1,10 @@
 (import foreign)
-(import lolevel)
-
-;(foreign-declare "#include <windows.h>")
 
 (define-constant user_scope 2)
 (define-constant system_scope 1)
 
 ;; @descr: get value of a environment variable
-;; NOTE: nonnull-c-string*, because returned string is malloced and needs to be freed
+;; NOTE: nonnull-c-string* type will be auto-deallocated after return from C function
 (define read-var 
   (foreign-lambda nonnull-c-string* "winapi_read_var" int c-string))
 
@@ -17,20 +14,19 @@
 (define winapi-read-by-index
   (foreign-lambda bool "winapi_read_by_index" int (c-pointer int) (c-pointer c-string) (c-pointer c-string)))
 
-;; @descr: returns list of list of variables ((scope name value) (scope name value) ...)
+;; @descr: returns list of variables ((scope name value) (scope name value) ...)
 (define (read-all-vars)
-  (define-external scope_ext int)
-  (define-external name_ext c-string*)
-  (define-external value_ext c-string*)
-  
-  (define total-count (winapi-var-count/all))
-  
-  (let loop ((index 0))
-    (cond
-      ((>= index total-count) `())
-      (else
-        (winapi-read-by-index index (location scope_ext) (location name_ext) (location value_ext))
-        (cons (list index scope_ext name_ext value_ext) (loop (+ index 1)))))))
+  (let ((total-count (winapi-var-count/all)))
+   (let loop ((index 0))
+      (if (>= index total-count) 
+          `()
+          (begin
+            (let-location ((scope int)
+                           (name c-string*)   ; c-string* is malloced from c, but it will be  
+                           (value c-string*)) ; auto-deallocated on first dereference
+            (winapi-read-by-index index (location scope) (location name) (location value))
+            (cons (list scope name value) (loop (+ index 1))))))))) ; memory is deallocated 
+                                                                    ; at this point
 
 (define (write-var! scope name value) `())
 

@@ -3,11 +3,21 @@
 (include "vars")
 (include "script-grammar")
 (include "script-statement")
+(include "utils")
 
 (use irregex srfi-1)
 
-;; @descr: generate scripts from current environment variables
-(define (generate-script) "script generated")
+;; @descr: exports current environment variables to a script
+(define (generate-script)
+  (string-merge/deliminated 
+    (map (lambda (variable)                
+           (statement->script
+             (make-op/assign               ; represent vars as assignment statements
+               (first variable)            ; scope
+               (second variable)           ; name
+               (list (third variable)))))  ; value
+         (read-all-vars))
+    "\n"))                                 ; deliminate with new lines
 
 ;; @descr: parse script and execute it
 (define (execute-script script) 
@@ -107,7 +117,3 @@
             " + ")
            ((op-remove? statement)
             " - "))))
-
-
-
-

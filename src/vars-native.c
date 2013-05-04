@@ -1,22 +1,12 @@
 #include <windows.h>
 #include <stdio.h>
 
-char* getstr(char* name)
-{
-return "DIMOND";
-};
-
 #define SYSTEM_SUBKEY "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment"
 #define USER_SUBKEY  "Environment"
 #define SYSTEM_ROOTKEY HKEY_LOCAL_MACHINE
 #define USER_ROOTKEY HKEY_CURRENT_USER
 #define SYSTEM_SCOPE 1
 #define USER_SCOPE 2
-
-// void open_key(HKEY* root, char* subkey, HKEY* out_key)
-// {
-
-// }
 
 LONG open_variables_key(int scope, HKEY* key_out)
 {
@@ -77,6 +67,8 @@ DWORD get_longest_name(HKEY hKey)
 
     return longest_name;
 }
+
+
 
 char* winapi_read_var(int scope, char* name)
 {
@@ -167,7 +159,7 @@ BOOL winapi_read_by_index(int index, int* out_scope, char** out_name, char** out
     // buffer size / bytes copied to buffer
     DWORD in_out_name_size = sizeof(name_buffer);
     DWORD in_out_value_size = sizeof(value_buffer);
-
+    
     /// retrieve name and value into buffers ///
     RegEnumValue(hKey,
                  index,
@@ -179,7 +171,7 @@ BOOL winapi_read_by_index(int index, int* out_scope, char** out_name, char** out
                  &in_out_value_size);                   // likewise
     
     RegCloseKey(hKey);
-
+    
     /// allocate and copy to new heap buffers, return them through output arguments ///
     *out_name = malloc(in_out_name_size + 1);              // + 1 for null terminator
     memcpy(*out_name, name_buffer, in_out_name_size + 1);  // copy string + null terminator

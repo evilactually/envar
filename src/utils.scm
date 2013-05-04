@@ -40,7 +40,8 @@
 (define (write/to-file filename str)
   (with-output-to-file filename 
     (lambda ()
-      (write str))))
+      (display str)))) ; display instead of just "write", 
+                       ; because display will render special chars
 
 (use irregex)
 
