@@ -6,7 +6,7 @@ Why Make This?
 
     If you are a developer and you install lots of tools that you need to have
     on your PATH, you probably have faced name conflicts, general clutter
-    or even ran our of space to keep all your paths. On linux it's not much of 
+    or even ran our of space to keep all your paths. On Linux it's not much of 
     a problem since you can neatly keep all your variables in bash scripts. 
     On Windows however there isn't any easy way to persistently change
     them without relying on awkward user interface or tweaking deeply hidden 
@@ -15,10 +15,10 @@ Why Make This?
     Envar provides a simple script syntax for setting, creating and removing 
     environment variables in either system or user scopes. It can be used 
     directly from command line or as interpreter for script files. All changes 
-    are made on the registry so they are visible beween applications
+    are made on the registry so they are visible between applications
     and persist after reboots.
 
-    Envar doesn't enforce any particular workflow, it just merely provides an 
+    Envar doesn't enforce any particular work-flow, it just merely provides an 
     interpreter for a script syntax. How you use it is up to you.
 
 Compiling
@@ -26,13 +26,13 @@ Compiling
     Requirements:
         Chicken Scheme
         MinGW
-        Additional eggs: defstruc, test (only if you want to run tests)
+        Additional eggs: defstruct, test (only if you want to run tests)
 
-    If you have working chicken scheme and mingw just run make in bash shell:
+    If you have working chicken scheme and MinGW just run make in bash shell:
 
         make
 
-        This will produce a non protable executable that will depend on 
+        This will produce a non portable executable that will depend on 
         chicken runtime
 
     To compile a portable executable with chicken runtime included:
@@ -55,7 +55,7 @@ Introduction
 
     Before you do any damage to your environment variables, save them to file:
 
-        envar -e my_vars_when_my_computer_was_still_working.env
+        envar -e my_vars_when_my_computer_was_still_ working.env
 
     To load them back:
 
@@ -79,7 +79,7 @@ Introduction
     
         $(PATH) is evaluated by Envar to value of user variable named PATH
 
-    The only issue, if you are using linux-like shell on windows it may like
+    The only issue, if you are using Linux-like shell on windows it may like
     to interpret $() as it's own sub-shell, so you may want to surround the whole
     expression in single quotes 'PATH : [$(PATH);C:\Java\bin]'
 
@@ -96,14 +96,14 @@ Introduction
         $(VARIABLE_NAME) : [VALUE]
 
     There's one more hidden feature of $(), you can execute any command with it
-    if you prepend contets with "shell" keyword:
+    if you prepend contents with "shell" keyword:
 
         MYVAR : [$(shell dir)]
     
         It will stuff a directory listing into a variable, if that may serve any purpose.
     
     This is akin to syntax used in Unix make files. It's not really useful for anything
-    and was simply added for completness sake.
+    and was simply added for completeness sake.
 
     Variables like PATH are very big and convoluted, so to help you organize scripts, you
     can separate values into multiple brackets:
@@ -149,7 +149,7 @@ Introduction
 
         MYVAR +
 
-    Lastly your scripts can containt comments:
+    Lastly your scripts can contain comments:
 
     envar @PATH : [$(@PATH);]
                 # [C:\Java\bin;]
@@ -163,7 +163,7 @@ Introduction
     in multiple files and load them as you need. You can write scripts that
     completely replace some variables, Base Profiles, and scripts that extend
     those profiles with additional paths, Incremental Profiles. This is not a feature, 
-    it just a recommended workflow you can choose to adopt.
+    it just a recommended work-flow you can choose to adopt.
 
 Help Message:
 
