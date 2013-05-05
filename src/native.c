@@ -105,6 +105,23 @@ char* winapi_read_var(int scope, char* name)
     return value_buf;
 };
 
+BOOL winapi_var_exists(int scope, char* name)
+{
+    HKEY hKey;
+    int lRet = open_variables_key(scope, &hKey);
+           
+    lRet = RegQueryValueEx(hKey,                     
+                           name,                     
+                           0,
+                           NULL,                     
+                           NULL,            
+                           NULL);
+
+    RegCloseKey(hKey);
+    
+    return lRet == ERROR_SUCCESS;
+};
+
 void winapi_remove_var(int scope, char* name)
 {
     HKEY hKey;
@@ -206,3 +223,15 @@ BOOL winapi_read_by_index(int index, int* out_scope, char** out_name, char** out
 
     return TRUE;
 };
+
+char* winapi_expand_vars_in_string(const char* string_in)
+{
+    int const BUFFER_SIZE = 256;
+    
+    char* string_out = malloc(sizeof(char)*BUFFER_SIZE);
+    int iRet = ExpandEnvironmentStrings(string_in,
+                             string_out,
+                             sizeof(char)*BUFFER_SIZE);
+    
+    return string_out;
+}

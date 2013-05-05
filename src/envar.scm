@@ -1,5 +1,6 @@
 (include "utils")
 (include "script")
+(include "help")
 
 (use extras)
 
@@ -27,7 +28,7 @@
                     (write/to-file (file-name) script)
                     (display script)))
               (execute-script args-merged)))       ; read script from arguments
-      (write-line "UNHELPFUL HELP MESSAGE")))      ; no args? Show help.      
+      (write-line usage-msg)))      ; no args? Show help.      
         
 ;; Main
 (envar (command-line-arguments))

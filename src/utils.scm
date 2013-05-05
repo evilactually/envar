@@ -60,10 +60,15 @@
   (not (irregex-match-data? (irregex-match `(: (* whitespace ) ) str))))
 
 (use posix extras)
+(import foreign)
+
+(define winapi-expand-envar-string
+  (foreign-lambda c-string* "winapi_expand_vars_in_string" c-string))
 
 ;; @descr: evaluates a command in shell and returns it's standard output
 (define (shell-evaluate! str)
   (call-with-input-pipe 
+    ;(winapi-expand-envar-string str)
     str
     (lambda(port) 
       (read-string #f port))

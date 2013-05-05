@@ -39,7 +39,8 @@
   (foreign-lambda void "winapi_write_var" int c-string c-string))
 
 ;; @descr: returns #t if variable is present in registry
-(define (var-exists? scope name) `())
+(define var-exists?
+  (foreign-lambda bool "winapi_var_exists" int c-string))
 
 ;; @descr: creates empty variable in scope
 (define (create-var! scope name)

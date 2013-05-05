@@ -1,68 +1,175 @@
-   A simple console application for managing windows environment 
-   variables with config files
+What Is It?
+
+   A console application for managing Windows environment variables
 
 Why Make This?
 
-    Windows operating system doesn't have any easy ways to persistently change
-    environment  variables without relying on graphical user interface.
+    If you are a developer and you install lots of tools that you need to have
+    on your PATH, you probably have faced name conflicts, general clutter
+    or even ran our of space to keep all your paths. On linux it's not much of 
+    a problem since you can neatly keep all your variables in bash scripts. 
+    On Windows however there isn't any easy way to persistently change
+    them without relying on awkward user interface or tweaking deeply hidden 
+    registry keys.
 
-    Envar solves this problem by requiring only a few keystrokes to create and
-    edit  variables.
-
-    envar PATH:[%PATH%;C:\ruby\bin] -- adding to path is easy! (Yes, it's a
-    comment)
-
-    All changes are made on the registry so they are visible beween applications
+    Envar provides a simple script syntax for setting, creating and removing 
+    environment variables in either system or user scopes. It can be used 
+    directly from command line or as interpreter for script files. All changes 
+    are made on the registry so they are visible beween applications
     and persist after reboots.
 
-    Envar makes one step further by allowing you to load scripts from files as
-    well  as to save current environment variables into script files for later
-    loading
+    Envar doesn't enforce any particular workflow, it just merely provides an 
+    interpreter for a script syntax. How you use it is up to you.
+
+Compiling
     
-    Load from file
-        echo "PATH:[%PATH%][;C:\ruby\bin]" > myscript 
-        envar -i myscript
+    Requirements:
+        Chicken Scheme
+        MinGW
+        Additional eggs: defstruc, test (only if you want to run tests)
+
+
+    If you have working chicken scheme and mingw just run make in bash shell:
+
+        make
+
+Introduction
+
+    Before you do any damage to your environment variables, save them to file:
+
+        envar -e my_vars_when_my_computer_was_still_working.env
+
+    To load them back:
+
+        envar -i my_vars_when_my_computer_was_still_working.env
+
+    A very common task is to add some directory to PATH variable. Let's add 
+    "C:\Java\bin" to user PATH:
     
-    Send through pipe
-        echo "PATH:[%PATH%][;C:\ruby\bin]" | envar -i myscript
+        envar PATH : [%PATH%;C:\Java\bin] (DON'T ACTUALLY RUN IT, 
+                                           IT WILL SET YOUR HAIR ON FIRE)
 
-    Save all environment variables to file
-        envar -e my_variables
+    Assuming you are using normal cmd.exe shell, %PATH% should evaluate to it's 
+    current value and the result string will be passed to envar as argument.
 
-    Output environment variables to standard output (or pipe)
-        envar -e    
+    Be warned though that it will fully expand not only %PATH% variable itself, 
+    but any variables inside of it as well. In general %PATH% doesn't look the same 
+    as in registry when it's evaluated by cmd.exe. If you  want to get the 
+    exact value of PATH use $() syntax to let the Envar handle variable expansion:
 
-    Note that in the above example %PATH% is replaced automatically by your shell. 
-    If you want to get value of PATH from with-in a script file you need to 
-    surround it with $(...): 
+        envar PATH : [$(PATH);C:\Java\bin] (This is the recommended way)
+    
+        $(PATH) is evaluated by Envar to value of user variable named PATH
 
-    PATH:[$(%PATH%)][;C:\ruby\bin]
+    The only issue, if you are using linux-like shell on windows it may like
+    to interpret $() as it's own sub-shell, so you may want to surround the whole
+    expression in single quotes 'PATH : [$(PATH);C:\Java\bin]'
 
-    Anything inside the parenthesis will be evaluated by your shell,
-    which means you can use any normal shell command to generate
-    values of your variables or any part of a script.
+    If you wanted to set PATH variable in SYSTEM scope instead of the default USER scope, 
+    you can specify system scope by prepending @ sign before variable name. Same syntax 
+    is used inside $() block as well:
+
+        envar @PATH : [$(@PATH);C:\Java\bin]
+
+    Interesting property of $() blocks is that they work anywhere, not just 
+    inside values, because they are implemented as simple text replacements. 
+    You can easily use them to generate any part of script including variable names:
+
+        $(VARIABLE_NAME) : [VALUE]
+
+    There's one more hidden feature of $(), you can execute any command with it
+    if you prepend contets with "shell" keyword:
+
+        MYVAR : [$(shell dir)]
+    
+        It will stuff a directory listing into a variable, if that may serve any purpose.
+    
+    This is akin to syntax used in Unix make files. It not really useful for anything
+    and was simply added for completness sake.
+
+    Variables like PATH are very big and convoluted, so to help you organize scripts, you
+    can separate values into multiple brackets:
+
+        envar @PATH : [$(@PATH);]
+                      [C:\Java\bin;]
+                      [C:\Ruby\bin;]
+                      [C:\chicken\bin;]
+
+        It's not sensetive to whitespace, you can format it anyway you want.
+        Contents of brackets are concatenated together during assignment.
+
+    As was shown, you can keep your scripts in files and load them with -i option:
+
+        envar.exe -i myvars.env
+
+    Or save all current variables into files with -e
+
+        envar.exe -e myvars.env    
+
+    If file option is absent Envar will work with standard input/output pipe:
+
+        Print exported script to terminal:
+        envar.exe -e 
+       
+        Type script interactively in terminal (press Ctrl-Z to print EOF)
+        envar.exe -i
+
+        Pipe output from other commands:
+        echo "MYVAR : [VALUE]" | envar -i
+
+    Removing variables. When you assigned variables you used ":" operator. 
+    Now to remove, you have "-" operator:
+
+        MYVAR -
+
+    Scope modifier @ can be used to remove variable from SYSTEM scope:
+
+        @MYVAR -
+
+    There's a less useful sister command, to create variable, which just creates 
+    an empty variable:
+
+        MYVAR +
+
+    Lastly your scripts can containt comments:
+
+    envar @PATH : [$(@PATH);]
+                # [C:\Java\bin;]
+                  [C:\Ruby\bin;]    # Ruby ruby ruby, when will you be mine. Whooo
+                  [C:\chicken\bin;]
+    MYVAR +
+    #MYVAR -
+
+   
+    This is really all you need to know. To manage your variables you can keep them
+    in multiple files and load them as you need. You can write scripts that
+    completely replace some variables, Base Profiles, and scripts that extend
+    those profiles with additional paths, Incremental Profiles. This is not a feature, 
+    it just a recommended workflow you can choose to adopt.
+
+Help Message:
 
 Syntax:
 
--- This is a comment
-VARIABLE : [THIS IS VALUE] -- sets **user** environment variable 
-                           -- %VARIABLE% to "THIS IS VALUE"
+# This is a comment
+VARIABLE : [THIS IS VALUE] # sets **user** environment variable 
+                           # %VARIABLE% to "THIS IS VALUE"
 
-VARIABLE : [THIS]          -- exactly the same, just split up in two parts
+VARIABLE : [THIS]          # exactly the same, just split up in two parts
            [IS VALUE] 
                            
-@VARIABLE : [VALUE]        -- here VARIABLE is a **system** environment variable
-                           -- as opposed to **user**
+@VARIABLE : [VALUE]        # here VARIABLE is a **system** environment variable
+                           # as opposed to **user**
 
-VARIABLE +                 -- creates a new user variable, without setting it's value
-VARIABLE -                 -- removes a user variable
-                           -- (space before + and - is optional)
+VARIABLE +                 # creates a new user variable, without setting it's value
+VARIABLE -                 # removes a user variable
+                           # (space before + and - is optional)
 
-@VARIABLE -                -- same but for a system variable
+@VARIABLE -                # same but for a system variable
 
-@PATH : [$(%PATH%)]        -- $(...) means evaluate whatever is inside parenthesis
-        [C:\ruby\bin]      -- in a system shell. %PATH% evaluates to a value of the 
-                           -- PATH variable
+@PATH : [$(%PATH%)]        # $(...) means evaluate whatever is inside parenthesis
+        [C:\ruby\bin]      # in a system shell. %PATH% evaluates to a value of the 
+                           # PATH variable
 
 Statements can be written next to each other or on separate lines:
 
@@ -88,8 +195,8 @@ EXECUTING SCRIPTS:
 Examples:
 
     Directly passing a script line:
-        envar JAVA_HOME : [C:\Java\bin] RUBY_HOME- -- set JAVA_HOME 
-                                                   -- and remove RUBY_HOME
+        envar JAVA_HOME : [C:\Java\bin] RUBY_HOME- # set JAVA_HOME 
+                                                   # and remove RUBY_HOME
 
     Reading script from a file:
         envar -i script_file
@@ -115,3 +222,14 @@ Examples:
 
     Exporting to file through a pipe:
         envar -e > saved_file
+
+Known Issues:
+
+-   Setting batch variables inside shell blocks doesn't evaluate them to new values
+    $(shell set VAR=10
+            echo %VAR%) # doesn't evaluate VAR to 10, because vars are evaluated 
+                        # before command execution
+
+-   Programs need to be restarted for changes in variables to propagate.
+    Although no restarting required for Envar to work correctly since it's working
+    directly with registry.
