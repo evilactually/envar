@@ -28,10 +28,28 @@ Compiling
         MinGW
         Additional eggs: defstruc, test (only if you want to run tests)
 
-
     If you have working chicken scheme and mingw just run make in bash shell:
 
         make
+
+        This will produce a non protable executable that will depend on 
+        chicken runtime
+
+    To compile a portable executable with chicken runtime included:
+
+        make envar-deploy
+
+    Other targets:
+
+        make clean
+
+        make tests
+
+Binary Distribution:
+
+    Latest portable binary can be downloaded from:
+
+        https://dl.dropboxusercontent.com/u/23611520/envar-0.9.zip
 
 Introduction
 
@@ -84,7 +102,7 @@ Introduction
     
         It will stuff a directory listing into a variable, if that may serve any purpose.
     
-    This is akin to syntax used in Unix make files. It not really useful for anything
+    This is akin to syntax used in Unix make files. It's not really useful for anything
     and was simply added for completness sake.
 
     Variables like PATH are very big and convoluted, so to help you organize scripts, you
@@ -95,7 +113,7 @@ Introduction
                       [C:\Ruby\bin;]
                       [C:\chicken\bin;]
 
-        It's not sensetive to whitespace, you can format it anyway you want.
+        It's not sensitive to whitespace, you can format it anyway you want.
         Contents of brackets are concatenated together during assignment.
 
     As was shown, you can keep your scripts in files and load them with -i option:
