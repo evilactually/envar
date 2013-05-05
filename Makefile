@@ -16,7 +16,7 @@ $(EXECUTABLE)-deploy:
 	gcc -c $(ENVAR_SRC)/native.c -o $(ENVAR_BUILD)/native.o
 	csc -deploy $(ENVAR_SRC)/envar.scm $(ENVAR_BUILD)/native.o -o $(ENVAR_BUILD)/$(EXECUTABLE) -I $(ENVAR_SRC)
 	rm -f $(ENVAR_BUILD)/native.o
-	chicken-install -deploy -p .$(ENVAR_BUILD)/$(EXECUTABLE) defstruct
+	chicken-install -deploy -p ./$(ENVAR_BUILD)/$(EXECUTABLE) defstruct
 	@echo
 	@echo "BUILD SUCCESSFUL: " $(ENVAR_BUILD)/$(EXECUTABLE)
 clean:
