@@ -17,6 +17,7 @@ $(EXECUTABLE)-deploy:
 	csc -deploy $(ENVAR_SRC)/envar.scm $(ENVAR_BUILD)/native.o -o $(ENVAR_BUILD)/$(EXECUTABLE) -I $(ENVAR_SRC)
 	rm -f $(ENVAR_BUILD)/native.o
 	chicken-install -deploy -p ./$(ENVAR_BUILD)/$(EXECUTABLE) defstruct
+	cp README ./$(ENVAR_BUILD)/$(EXECUTABLE)
 	@echo
 	@echo "BUILD SUCCESSFUL: " $(ENVAR_BUILD)/$(EXECUTABLE)
 clean:
