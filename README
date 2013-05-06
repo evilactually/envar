@@ -185,9 +185,11 @@ VARIABLE -                 # removes a user variable
 
 @VARIABLE -                # same but for a system variable
 
-@PATH : [$(%PATH%)]        # $(...) means evaluate whatever is inside parenthesis
-        [C:\ruby\bin]      # in a system shell. %PATH% evaluates to a value of the 
-                           # PATH variable
+@PATH : [$(@PATH);]        # $(...) blocks are used to reference values of variables
+        [C:\ruby\bin;]       
+        [$(JAVA_HOME)\bin;]  
+
+@PATH : [$(shell command)] # command evaluation
 
 Statements can be written next to each other or on separate lines:
 
@@ -251,3 +253,9 @@ Known Issues:
 -   Programs need to be restarted for changes in variables to propagate.
     Although no restarting required for Envar to work correctly since it's working
     directly with registry.
+
+-   Changes to variables are not immidiately flushed during script execution
+
+-   No way to specify variable type, PATH variables need to be REG_EXPAND_SZ, 
+    Other variables may benefit from being REG_SZ. New default will be expandable,
+    but you will be able to have REG_SZ with = operator.
