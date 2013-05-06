@@ -243,19 +243,25 @@ Examples:
     Exporting to file through a pipe:
         envar -e > saved_file
 
-Known Issues:
+Current Issues/Wish List:
 
--   Setting batch variables inside shell blocks doesn't evaluate them to new values
+!   Setting batch variables inside shell blocks doesn't evaluate them to new values
     $(shell set VAR=10
             echo %VAR%) # doesn't evaluate VAR to 10, because vars are evaluated 
                         # before command execution
 
--   Programs need to be restarted for changes in variables to propagate.
+!   Programs need to be restarted for changes in variables to propagate.
     Although no restarting required for Envar to work correctly since it's working
     directly with registry.
 
--   Changes to variables are not immidiately flushed during script execution
+!   Changes to variables are not immidiately flushed during script execution
 
--   No way to specify variable type, PATH variables need to be REG_EXPAND_SZ, 
++   No way to specify variable type, PATH variables need to be REG_EXPAND_SZ, 
     Other variables may benefit from being REG_SZ. New default will be expandable,
     but you will be able to have REG_SZ with = operator.
+
++   It would be useful to be able to print out variable values as they are in registry
+    Writing a variable name without operator is a suitable syntax:
+
+    @PATH TMP JAVA_HOME
+
