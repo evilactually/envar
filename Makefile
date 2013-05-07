@@ -1,32 +1,46 @@
 ENVAR_SRC=./src
 ENVAR_BUILD=./build
-EXECUTABLE=envar
+ENVAR_TARGET=envar
 
-all: $(EXECUTABLE)
+VERSION=1.1
 
-$(EXECUTABLE):
+all: build
+
+build: native.o
 	mkdir -p ./build > /dev/null;
-	gcc -c $(ENVAR_SRC)/native.c -o $(ENVAR_BUILD)/native.o
-	csc $(ENVAR_SRC)/envar.scm $(ENVAR_BUILD)/native.o -o $(ENVAR_BUILD)/$(EXECUTABLE) -I $(ENVAR_SRC)
+	csc $(ENVAR_SRC)/envar.scm $(ENVAR_BUILD)/native.o -o $(ENVAR_BUILD)/$(ENVAR_TARGET) -I $(ENVAR_SRC)
 	rm -f $(ENVAR_BUILD)/native.o
 	@echo
-	@echo "BUILD SUCCESSFUL: " $(ENVAR_BUILD)/$(EXECUTABLE)
-$(EXECUTABLE)-deploy:
+	@echo "BUILD SUCCESSFUL: " $(ENVAR_BUILD)/$(ENVAR_TARGET)
+build-portable: native.o
 	mkdir -p ./build > /dev/null;
-	gcc -c $(ENVAR_SRC)/native.c -o $(ENVAR_BUILD)/native.o
-	csc -deploy $(ENVAR_SRC)/envar.scm $(ENVAR_BUILD)/native.o -o $(ENVAR_BUILD)/$(EXECUTABLE) -I $(ENVAR_SRC)
+	csc -deploy $(ENVAR_SRC)/envar.scm $(ENVAR_BUILD)/native.o -o $(ENVAR_BUILD)/$(ENVAR_TARGET) -I $(ENVAR_SRC)
+	chicken-install -deploy -p ./$(ENVAR_BUILD)/$(ENVAR_TARGET) defstruct
+	cp README $(ENVAR_BUILD)/$(ENVAR_TARGET)
 	rm -f $(ENVAR_BUILD)/native.o
-	chicken-install -deploy -p ./$(ENVAR_BUILD)/$(EXECUTABLE) defstruct
-	cp README ./$(ENVAR_BUILD)/$(EXECUTABLE)
+package: build-portable
+	@echo PACKAGING
+	
+	cd $(ENVAR_BUILD); \
+	tar -cf $(ENVAR_TARGET)-$(VERSION).tar ./$(ENVAR_TARGET)/ ;\
+	gzip -9 --force $(ENVAR_TARGET)-$(VERSION).tar ;\
+		
+	@echo CLEAN-UP
+	rm -rf $(ENVAR_BUILD)/$(ENVAR_TARGET)
+	
 	@echo
-	@echo "BUILD SUCCESSFUL: " $(ENVAR_BUILD)/$(EXECUTABLE)
+	@echo "BUILD SUCCESSFUL: " $(ENVAR_BUILD)/$(ENVAR_TARGET)/
 clean:
-	rm -f $(ENVAR_BUILD)/tests.exe $(ENVAR_BUILD)/native.o ./build/$(EXECUTABLE).exe
-	rm -rf $(ENVAR_BUILD)/$(EXECUTABLE)
-tests:
+	rm -f $(ENVAR_BUILD)/tests.exe $(ENVAR_BUILD)/native.o ./build/$(ENVAR_TARGET).exe
+	rm -rf $(ENVAR_BUILD)/$(ENVAR_TARGET)
+	rm -f $(ENVAR_BUILD)/*.tar.gz $(ENVAR_BUILD)/*.tar
+tests: native.o
 	mkdir -p ./build > /dev/null;
-	gcc -c $(ENVAR_SRC)/native.c -o $(ENVAR_BUILD)/native.o
 	csc $(ENVAR_SRC)/tests/tests.scm $(ENVAR_BUILD)/native.o -o $(ENVAR_BUILD)/tests -I $(ENVAR_SRC)
 	$(ENVAR_BUILD)/tests
+	rm -f $(ENVAR_BUILD)/native.o
 	@echo
 	@echo "TESTS SUCCESSFUL"
+native.o:
+	mkdir -p ./build > /dev/null;
+	gcc -c $(ENVAR_SRC)/native.c -o $(ENVAR_BUILD)/native.o
