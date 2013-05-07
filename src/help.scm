@@ -1,31 +1,70 @@
 (define usage-msg #<<EOF
-Syntax:
 
-# This is a comment
-VARIABLE : [THIS IS VALUE] # sets **user** environment variable 
-                           # %VARIABLE% to "THIS IS VALUE"
+Script Syntax:
 
-VARIABLE : [THIS]          # exactly the same, just split up in two parts
-           [IS VALUE] 
-                           
-@VARIABLE : [VALUE]        # here VARIABLE is a **system** environment variable
-                           # as opposed to **user**
-
-VARIABLE +                 # creates a new user variable, without setting it's value
-VARIABLE -                 # removes a user variable
-                           # (space before + and - is optional)
-
-@VARIABLE -                # same but for a system variable
-
-@PATH : [$(%PATH%)]        # $(...) means evaluate whatever is inside parenthesis
-        [C:\ruby\bin]      # in a system shell. %PATH% evaluates to a value of the 
-                           # PATH variable
-
-Statements can be written next to each other or on separate lines:
-
-    @VARIABLE: [VALUE] VARIABLE+ @PATH: [$(%PATH%)] [C:\ruby\bin]   
+    Statement structure:
+        
+        [SCOPE MODIFIER]VARIABLE [OPERATOR];
   
-Usage:
+    Comments:
+
+        # comment string
+
+    Operators:
+
+        Create variable:
+            "+" 
+
+        Remove variable:
+            "-" 
+
+        Assign variable
+            ": [text] [$(VAR)] [$(shell cmd)] ..." 
+
+        Print variable:
+            "" (no op) 
+
+    Scope modifier:
+
+        User scope:
+            "" (no modifier, default)
+
+        System scope:
+            "@"
+
+Script Examples:
+
+    Create variable:
+
+        VAR +;
+
+    Remove variable:
+
+        VAR -;
+
+    Assign(and auto create):
+
+        VAR : [value 1]
+              [value 2];
+
+    Assign system scope:
+
+        @VAR : [value 1]
+               [value 2];
+
+    Reference another variable:
+
+        @VAR_A : [value of A];
+        @VAR_B : [value of B];
+        @VAR_BOTH : [I have $(@VAR_A)]
+                    [ and ]
+                    [$(@VAR_B)];
+
+    Print value of a variable to stdout:
+
+        VAR;
+
+Command Line Usage:
 
     envar {SCRIPT LINE | -{i|e} [SCRIPT FILE]}
 
@@ -45,13 +84,15 @@ EXECUTING SCRIPTS:
 Examples:
 
     Directly passing a script line:
-        envar JAVA_HOME : [C:\Java\bin] RUBY_HOME- # set JAVA_HOME 
-                                                   # and remove RUBY_HOME
+
+        envar JAVA_HOME:[C:\Java\bin]; RUBY_HOME-;
 
     Reading script from a file:
+
         envar -i script_file
 
     Passing a script using pipes (notice missing file parameter):
+
         envar -i < script_file
     OR
         echo "JAVA_HOME : [C:\Java\bin]" | envar -i
@@ -65,12 +106,15 @@ GENERATING SCRIPTS:
 Examples:
 
     Exporting to file:
+
         envar -e saved_file 
 
     Exporting to standard output:
+
         envar -e
 
     Exporting to file through a pipe:
+
         envar -e > saved_file
 EOF
 )
