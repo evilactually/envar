@@ -76,7 +76,7 @@ void winapi_write_var(int scope, char* name, char* value)
     RegSetValueEx(hKey,
                   name,
                   0,
-                  REG_SZ, // null terminated string
+                  REG_EXPAND_SZ, // null terminated string (REG_SZ also can be used here)
                   value,
                   sizeof(char)*(strlen(value) + 1));
     RegCloseKey(hKey);

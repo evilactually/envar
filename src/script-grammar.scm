@@ -3,25 +3,28 @@
 ;; @descr: regular expression used to tokanize script statements and for error detection
 ;;         NOTE: individual values are not parsed here for technical reasons, see value-igx
 (define statement-igx `(: 
-                         (=> scope (? "@"))           ; scope modifier
-                         (=> name (*  
+                         (=> scope (? "@"))             ; scope modifier
+                         (=> name (+  
                                     (or alphabetic 
-                                        numeric 
-                                        "-"
-                                        "_")))
-                         (* whitespace)               ; whitespace before +/- op        
-                         (or 
-                           (=> op (or "+" "-"))
-                           (: 
-                             (* whitespace)           ; whitespace before :
-                             (=> op ":")
-                             (=> values               
-                                 (+                   ; one or more value brackets 
-                                   (: 
-                                     (* whitespace)   ; whitespace before each bracket
-                                     "[" 
-                                     (*? any)         ; non-greedy to stop at nearest "]"
-                                     "]")))))))
+                                      numeric 
+                                      "_")))
+                         (?
+                         (* whitespace)                 ; whitespace before +/- op is OK        
+                                                        ; all operators are optional
+                           (or 
+                             (=> op (or "+" "-"))
+                             (: 
+                               (* whitespace)           ; whitespace before : is OK
+                               (=> op ":")
+                               (=> values               
+                                   (+                   ; one or more value brackets 
+                                     (: 
+                                       (* whitespace)   ; whitespace before each bracket
+                                       "[" 
+                                       (*? (- any "[]")); stop at nearest "]", ban ] and [ inside
+                                       "]"))))))
+                         (* whitespace)                 ; whitespace before ; is OK
+                         ";"))                          ; statement deliminator
 
 ;; @descr: regular expression used to extract individual values 
 (define value-igx `(: 

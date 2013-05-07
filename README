@@ -6,7 +6,7 @@ Why Make This?
 
     If you are a developer and you install lots of tools that you need to have
     on your PATH, you probably have faced name conflicts, general clutter
-    or even ran our of space to keep all your paths. On Linux it's not much of 
+    or even ran out of space to keep all your paths. On Linux it's not much of 
     a problem since you can neatly keep all your variables in bash scripts. 
     On Windows however there isn't any easy way to persistently change
     them without relying on awkward user interface or tweaking deeply hidden 
@@ -64,8 +64,7 @@ Introduction
     A very common task is to add some directory to PATH variable. Let's add 
     "C:\Java\bin" to user PATH:
     
-        envar PATH : [%PATH%;C:\Java\bin] (DON'T ACTUALLY RUN IT, 
-                                           IT WILL SET YOUR HAIR ON FIRE)
+        envar PATH : [%PATH%;C:\Java\bin] (Don't run this yet)
 
     Assuming you are using normal cmd.exe shell, %PATH% should evaluate to it's 
     current value and the result string will be passed to envar as argument.
@@ -254,14 +253,6 @@ Current Issues/Wish List:
     Although no restarting required for Envar to work correctly since it's working
     directly with registry.
 
-!   Changes to variables are not immidiately flushed during script execution
-
 +   No way to specify variable type, PATH variables need to be REG_EXPAND_SZ, 
     Other variables may benefit from being REG_SZ. New default will be expandable,
     but you will be able to have REG_SZ with = operator.
-
-+   It would be useful to be able to print out variable values as they are in registry
-    Writing a variable name without operator is a suitable syntax:
-
-    @PATH TMP JAVA_HOME
-

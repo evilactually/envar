@@ -42,6 +42,18 @@
 (define (op-remove? statement)
   (equal? (statement-op statement) `remove))
 
+;; @descr: create a print statement
+(define (make-op/print scope name)
+  (define args-hash (make-hash-table))
+  (hash-table-set! args-hash `scope scope)
+  (hash-table-set! args-hash `name name)
+  (make-statement op: `print
+                  args: args-hash))
+
+;; @descr: check if statement is a removal op
+(define (op-print? statement)
+  (equal? (statement-op statement) `print))
+
 ;; @descr: get statement argument
 (define (op-arg statement field)
   (hash-table-ref (statement-args statement) field))

@@ -12,12 +12,12 @@
   (string-merge/deliminated 
     (map (lambda (variable)                
            (statement->script
-             (make-op/assign               ; represent vars as assignment statements
-               (first variable)            ; scope
-               (second variable)           ; name
-               (list (third variable)))))  ; value
+             (make-op/assign             ; represent vars as assignment statements
+               (first variable)          ; scope
+               (second variable)         ; name
+               (list (third variable))))); value
          (read-all-vars))
-    "\n"))                                 ; deliminate with new lines
+    "\n"))                               ; deliminate with new lines
 
 ;; @descr: parse script and execute it
 (define (execute-script script) 
@@ -48,11 +48,18 @@
     ((op-remove? statement)
      (remove-var! 
        (op-arg statement `scope)
-       (op-arg statement `name)))))
+       (op-arg statement `name)))
+    ((op-print? statement)
+     (write-line                           
+        (let* ((name (op-arg statement `name))
+               (scope (op-arg statement `scope))
+               (value (read-var scope name)))
+        (statement->script               ; make an assignment statement for display purposes
+          (make-op/assign scope name (list value))))))))
 
 ;; @descr: parses a preprocessed script into a list of statements
 (define (parse-statements script)
-  (map                                  ; map each statement              
+  (map                                   ; map each statement              
     (lambda (statement-match)
       ; helper
       (define (value-of submatch-name)
@@ -63,19 +70,21 @@
                         system_scope
                         user_scope))
       (define name (value-of `name))
-            
-      (if (equal? (value-of `op) ":")   ; operator ":"
-          (make-op/assign scope         ; scope
-                          name          ; name
-                          (map          ; map each value in brackets
-                            (lambda (value-match)
-                              (submatch-named value-match `value))
-                            (irregex-search/all-matches
-                              value-igx
-                              (submatch-named statement-match `values))))
-          ((if (equal? (value-of `op) "+")     ; + or - operator
-               make-op/create                  ;    +
-               make-op/remove) scope name)))   ;    -
+      
+      (if (not (value-of `op))           ; no operator(print statement)
+        (make-op/print scope name)
+        (if (equal? (value-of `op) ":")  ; operator ":"(set)
+            (make-op/assign scope        ; scope
+                            name         ; name
+                            (map         ; map each value in brackets
+                              (lambda (value-match)
+                                (submatch-named value-match `value))
+                              (irregex-search/all-matches
+                                value-igx
+                                (submatch-named statement-match `values))))
+            ((if (equal? (value-of `op) "+")     ; + or - operator
+                 make-op/create                  ;    + (create)
+                 make-op/remove) scope name))))  ;    - (remove)
     (irregex-search/all-matches statement-igx script)))
 
 ;; @descr: evaluates $() blocks as environment variables 
@@ -118,11 +127,14 @@
               " : "
               (apply string-append (map 
                                      (lambda (value)
-                                       (~ "[" value "] "))
+                                       (~ "[" value "]"))
                                      (op-arg statement `values)))
               
               ))
            ((op-create? statement)
-            " + ")
+            " +")
            ((op-remove? statement)
-            " - "))))
+            " -")
+           ((op-print? statement)
+            ""))
+     "; "))
