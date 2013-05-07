@@ -2,7 +2,7 @@ ENVAR_SRC=./src
 ENVAR_BUILD=./build
 ENVAR_TARGET=envar
 
-VERSION=1.1
+VERSION=1.0
 
 all: build
 
