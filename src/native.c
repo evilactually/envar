@@ -79,7 +79,6 @@ void winapi_write_var(int scope, char* name, char* value)
                   REG_SZ, // null terminated string
                   value,
                   sizeof(char)*(strlen(value) + 1));
-    RegFlushKey(hKey);
     RegCloseKey(hKey);
 }
 
@@ -127,7 +126,6 @@ void winapi_remove_var(int scope, char* name)
     HKEY hKey;
     LONG lRet = open_variables_key(scope, &hKey);
     RegDeleteValue(hKey, name);
-    RegFlushKey(hKey);
     RegCloseKey(hKey);
 };
 

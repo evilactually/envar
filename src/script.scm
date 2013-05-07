@@ -21,7 +21,7 @@
 
 ;; @descr: parse script and execute it
 (define (execute-script script) 
-  (let* ((script (preprocess-script script))        ; preprocess and check for errors
+  (let* ((script (strip-comments script))           ; preprocess and check for errors
          (found-bad-tokens (invalid-tokens script)))          
     (if (null? found-bad-tokens)
         (for-each execute-statement!                ; execute each statement
@@ -38,7 +38,9 @@
      (write-var! 
        (op-arg statement `scope)
        (op-arg statement `name)
-       (apply string-append (op-arg statement `values))))
+       (apply string-append (map 
+                              evaluate-shell-blocks
+                              (op-arg statement `values)))))
     ((op-create? statement)
      (create-var! 
        (op-arg statement `scope)
@@ -48,12 +50,6 @@
        (op-arg statement `scope)
        (op-arg statement `name)))))
 
-;; @descr: apply all preprocessing steps to script 
-;;         (runs before syntax validation and parsing)
-(define (preprocess-script script)
-  (strip-comments                              
-    (evaluate-shell-blocks script)))              
-  
 ;; @descr: parses a preprocessed script into a list of statements
 (define (parse-statements script)
   (map                                  ; map each statement              

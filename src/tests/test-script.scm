@@ -38,8 +38,8 @@
                                                (op-assign? (third statements)))))
             
             (let ((statements (parse-statements 
-                                (preprocess-script "VAR- # JAR : [VALUE]
-                                                                  # BAR+"))))
+                                (strip-comments "VAR- # JAR : [VALUE]
+                                                      # BAR+"))))
               (test "Comments" 1 (length statements)))
             
             (let ((statements (parse-statements "@GLOBAL_VAR+ USER_VAR-")))
@@ -57,18 +57,17 @@
                                                         (equal? "ABCDFabcdf" (second (op-arg statement `values)))
                                                         (equal? "1234567890" (third (op-arg statement `values))))))
             
-            (let ((statement (first (parse-statements 
-                                      (preprocess-script "VARIABLE : [$(TMP);C:\\test\\bin]")))))
+            (let ((statement (first (parse-statements "VARIABLE : [$(TMP);C:\\test\\bin]"))))
               
-              (test "Evaluation block, variable reference" 
-                    (string-append (read-var user_scope "TMP") ";C:\\test\\bin") 
+              (test "$(...) blocks are postponed until execution" 
+                    "$(TMP);C:\\test\\bin"      
                     (first (op-arg statement `values))))
             
             (let ((statement (first (parse-statements 
                                       (preprocess-script "VARIABLE : [$(shell echo AMETHIST) RING]")))))
               
-              (test "Evaluation block, shell command" 
-                    "AMETHIST\n RING"
+              (test "$(shell ...) blocks are postponed until execution" 
+                    "$(shell echo AMETHIST) RING"
                     (first (op-arg statement `values)))))
             
 (test-group "parse-statements function, special cases"
@@ -92,4 +91,27 @@
   (test "Unterminated value block" "[val2" (first (invalid-tokens "VAR+ PATH+ JAR:[val1][val2")))
   (test "Unexpected token between value blocks" ";[val2]" (first (invalid-tokens "JAR:[val1];[val2]")))
   (test "Special chars are not allowed" 2 (length (invalid-tokens "@SUPER_U$ER:[VALUE] B@R+ "))))
+  
+
+(test-group "execute-script function"
+  (execute-script "MATERIAL : [CARBON-FIBER COMPOSITE]")
+  (test-assert "Variable exists" (var-exists? user_scope "MATERIAL"))
+  (test "Variable asignment script" "CARBON-FIBER COMPOSITE" (read-var user_scope "MATERIAL"))
+
+  (execute-script "MATERIAL -")
+  (test-assert "Variable remove" (not (var-exists? user_scope "MATERIAL")))
+
+  (execute-script "PROPULSION +")
+  (test-assert "Variable create" (var-exists? user_scope "PROPULSION"))
+
+  (execute-script "PROPULSION : [TURBOFAN;]")
+  (execute-script "PROPULSION : [$(PROPULSION)] 
+                                [TURBOJET;]
+                                [TURBOPROP;]
+                                [SCRAMJET;]")
+  (test "Variable referencing after assignment" 
+        "TURBOFAN;TURBOJET;TURBOPROP;SCRAMJET;" 
+        (read-var user_scope "PROPULSION"))
+
+  (execute-script "PROPULSION -"))
   
