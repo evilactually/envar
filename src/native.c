@@ -87,7 +87,7 @@ char* winapi_read_var(int scope, char* name)
     HKEY hKey;
     int lRet = open_variables_key(scope, &hKey);
     
-    DWORD buffer_size = get_value_length(hKey, name);
+    DWORD buffer_size = get_value_length(hKey, name)+1;
     
     char* value_buf = malloc(buffer_size);
     value_buf[0]=0;                         // null terminate in case query 
@@ -193,8 +193,11 @@ BOOL winapi_read_by_index(int index, int* out_scope, char** out_name, char** out
     }
 
     // allocate temp buffers on stack for name and value
-    char name_buffer  [sizeof(char)*(get_longest_name(hKey))];
-    char value_buffer [sizeof(char)*(get_longest_value(hKey))];
+    char name_buffer  [sizeof(char)*(get_longest_name(hKey)+1)];
+    char value_buffer [sizeof(char)*(get_longest_value(hKey)+1)];
+
+    name_buffer[0]=0;  // null terminate
+    value_buffer[0]=0;
 
     // buffer size / bytes copied to buffer
     DWORD in_out_name_size = sizeof(name_buffer);
@@ -224,7 +227,7 @@ BOOL winapi_read_by_index(int index, int* out_scope, char** out_name, char** out
 
 char* winapi_expand_vars_in_string(const char* string_in)
 {
-    int const BUFFER_SIZE = 256;
+    int const BUFFER_SIZE = 2048;
     
     char* string_out = malloc(sizeof(char)*BUFFER_SIZE);
     int iRet = ExpandEnvironmentStrings(string_in,
