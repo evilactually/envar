@@ -192,7 +192,8 @@ Introduction
 
     Those are the registry keys affected by Envar, if you need to know:
 
-        User variables: HKEY_CURRENT_USER/Environment
+        User variables: 
+            HKEY_CURRENT_USER/Environment
 
         System variables: 
-        SYSTEM_SCOPE/SYSTEM/CurrentControlSet/Control/Session Manager/Environment
+            SYSTEM_SCOPE/SYSTEM/CurrentControlSet/Control/Session Manager/Environment
