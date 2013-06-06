@@ -6,10 +6,10 @@
 
 ;; @descr: test if each element of members is contained in a given list
 (define (member-each? members in)
-(cond 
-  ((equal? members `()) #t)
-  ((not (member (car members) in)) #f)
-  (else (member-each? (cdr members) in))))
+  (cond 
+    ((equal? members `()) #t)
+    ((not (member (car members) in)) #f)
+    (else (member-each? (cdr members) in))))
 
 ;; @descr: appends a list of strings and inserts a deliminator in between
 (define (string-merge/deliminated strings deliminator)
