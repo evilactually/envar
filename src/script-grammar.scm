@@ -56,8 +56,8 @@
 ;; @descr: regular expression used to search and remove comment blocks from scripts prior to parsing
 (define comment-igx `(: 
                        (or
-                         (: "#" (*? any) "\n")  ; comments ending with a newline (non-greedy)
-                         (: "#" (* any) ))))    ; or at the EOF (greedy)
+                         (: "//" (*? any) "\n")  ; comments ending with a newline (non-greedy)
+                         (: "//" (* any) ))))    ; or at the EOF (greedy)
 
 ;; @descr: regular expression for evaluation blocks $(VARIABLE) or $(shell COMMAND)
 (define eval-igx `(:

@@ -38,13 +38,13 @@
                                                (op-assign? (third statements)))))
             
             (let ((statements (parse-statements 
-                                (strip-comments "VAR-; # JAR : [VALUE]
-                                                       # BAR+"))))
+                                (strip-comments "VAR-; // JAR : [VALUE]
+                                                       // BAR+"))))
               (test "Comments" 1 (length statements)))
             
             (let ((statements (parse-statements "@GLOBAL_VAR+; USER_VAR-;")))
-              (test "Scope modifier #1: present" system_scope (op-arg (first statements) `scope))
-              (test "Scope modifier #2: not present" user_scope (op-arg (second statements) `scope)))
+              (test "Scope modifier //1: present" system_scope (op-arg (first statements) `scope))
+              (test "Scope modifier //2: not present" user_scope (op-arg (second statements) `scope)))
             
             (let ((statement (first (parse-statements "@AZ_az_09 +;"))))
               (test "Valid charset for names" "AZ_az_09" (op-arg statement `name)))
@@ -73,10 +73,10 @@
 (test-group "parse-statements function, special cases"
             
             (let ((statement (first (parse-statements "_A_PATH_+;"))))
-              (test "Underscores #1" "_A_PATH_" (op-arg statement `name)))
+              (test "Underscores //1" "_A_PATH_" (op-arg statement `name)))
             
             (let ((statement (first (parse-statements "___+;"))))
-              (test "Underscores #2: all undersoceres" "___" (op-arg statement `name))))
+              (test "Underscores //2: all undersoceres" "___" (op-arg statement `name))))
             
 (test-group "invalid-tokens function"
   (test "Variable with a wrong operator" 1 (length (invalid-tokens "VAR+; PATH*; JAR:[1234];")))

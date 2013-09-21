@@ -26,7 +26,7 @@ Script Syntax:
   
     Comments:
 
-        # comment string
+        // comment string
 
     Operators:
 

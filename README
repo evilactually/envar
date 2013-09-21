@@ -174,16 +174,16 @@ Introduction
                 [C:\chicken\bin;]
                 [C:\Program Files\Git\cmd;];
 
-    Lastly, your scripts can contain comments. Anything after # to the end of a
+    Lastly, your scripts can contain comments. Anything after // to the end of a
     line or string,  which ever happens first is stripped out from a script and
     doesn't affect it, in previous example we could comment out some paths for
     instance:
 
         @Path : [%SystemRoot%\system32;]
                 [%SystemRoot%;]
-               #[%SystemRoot%\System32\Wbem;]
-                [C:\chicken\bin;] # chicken 4.8.0.3 
-               #[C:\Program Files\Git\cmd;];
+              //[%SystemRoot%\System32\Wbem;]
+                [C:\chicken\bin;] // chicken 4.8.0.3 
+              //[C:\Program Files\Git\cmd;];
 
     Another feature of $() blocks, is that they can be used to execute any any
     command in shell and  insert their output into values:
