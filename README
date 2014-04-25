@@ -197,3 +197,6 @@ Introduction
 
         System variables: 
             SYSTEM_SCOPE/SYSTEM/CurrentControlSet/Control/Session Manager/Environment
+
+TODO:
+  * Use streams to read script files
