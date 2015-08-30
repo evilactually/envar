@@ -1,24 +1,4 @@
-What Is It?
-
-    A console application for managing Windows environment variables
-
-Why Make This?
-
-    If you are a developer and you install lots of tools that you need to have
-    on your PATH, you probably have faced name conflicts, general clutter or
-    even ran out of space to keep all your paths. On Linux it's not much of  a
-    problem since you can neatly keep all your variables in bash scripts.  On
-    Windows however there isn't any easy way to persistently change them without
-    relying on awkward user interface or tweaking deeply hidden  registry keys.
-
-    Envar provides a simple script syntax for setting, creating and removing
-    environment variables in either system or user scopes. It can be used
-    directly from command line or as interpreter for script files. All changes
-    are made on the registry so they are visible between applications and
-    persist after reboots.
-
-    Envar doesn't enforce any particular work-flow, it just merely provides an
-    interpreter for a script syntax. How you use it is up to you.
+A console application for managing Windows environment variables, I wrote this when I was learning Scheme, ages ago. I wouldn't recommend anyone actually using it, IT IS DANGEROUS. It has some serious usability problems - it is way to easy to make a mistake and make your system unbootable.
 
 Compiling
     
@@ -47,13 +27,7 @@ Compiling
 
         make tests
 
-Binary Distribution:
-
-    Latest portable binary can be downloaded from:
-
-        https://dl.dropboxusercontent.com/u/23611520/envar-1.0.tar.gz
-
-Introduction
+Using
     
     * Quick Tour
 
