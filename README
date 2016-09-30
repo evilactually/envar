@@ -1,4 +1,4 @@
-A console application for managing Windows environment variables, I wrote this when I was learning Scheme, ages ago. I wouldn't recommend anyone actually using it, IT IS DANGEROUS. It has some serious usability problems - it is way to easy to make a mistake and make your system unbootable.
+A console application for managing Windows environment variables.
 
 Compiling
     
